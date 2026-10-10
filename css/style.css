@@ -1,5 +1,5 @@
 /* =============================================================
-   UNIVERSAL STUDENT NEXUS (USN) — CORE STYLESHEET
+   CIVITAS STUDENT NETWORK (CSN) — CORE STYLESHEET
    ---------------------------------------------------------------
    This file holds the DESIGN SYSTEM: colors, type, spacing and
    base element styles. Component-specific styles (buttons, cards,
@@ -233,7 +233,7 @@ select:focus-visible,
 }
 
 /* The "node" mark — a small dot used as a structural motif that
-   echoes the Nexus network concept. Used before eyebrows, in list
+   echoes the Civitas network concept. Used before eyebrows, in list
    markers, and along the connector lines. Not decorative filler —
    it stands in for "a point in the network." */
 .eyebrow::before {

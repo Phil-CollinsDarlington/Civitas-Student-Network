@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — EVENTS.JS
+   CSN — EVENTS.JS
    ---------------------------------------------------------------
    ADD A NEW EVENT
    Copy the object below and replace the information.
@@ -13,7 +13,7 @@
 
 const events = [
   {
-    title: "Example: USN Student Networking Mixer",
+    title: "Example: CSN Student Networking Mixer",
     date: "2026-10-18",
     time: "3:00 PM",
     venue: "Example Venue, Kampala",
@@ -37,13 +37,13 @@ const events = [
     isExample: true,
   },
   {
-    title: "Example: USN Launch Gathering",
+    title: "Example: CSN Launch Gathering",
     date: "2026-06-12",
     time: "2:00 PM",
     venue: "Example Venue, Kampala",
     description:
       "A placeholder past-event entry, ready to be replaced with photos and highlights from a real gathering.",
-    speaker: "USN Team",
+    speaker: "CSN Team",
     registrationLink: "#",
     status: "past",
     isExample: true,

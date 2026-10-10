@@ -1,5 +1,5 @@
 # =================================================================
-# NETLIFY CONFIGURATION — Universal Student Nexus
+# NETLIFY CONFIGURATION — Civitas Student Network
 # This is a plain static site: no build command is required.
 # Netlify will detect the forms in pages/join.html, pages/contact.html
 # and pages/partners.html automatically because they carry the

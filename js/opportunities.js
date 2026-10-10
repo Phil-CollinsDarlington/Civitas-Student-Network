@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — OPPORTUNITIES.JS
+   CSN — OPPORTUNITIES.JS
    ---------------------------------------------------------------
    ADD A NEW OPPORTUNITY
    Copy one object from the array below and replace the values.
@@ -176,7 +176,7 @@ function initOpportunitiesDirectory() {
 document.addEventListener("click", (event) => {
   const btn = event.target.closest("[data-share-title]");
   if (!btn) return;
-  const text = encodeURIComponent(`Check out this opportunity via USN: ${btn.dataset.shareTitle}`);
+  const text = encodeURIComponent(`Check out this opportunity via CSN: ${btn.dataset.shareTitle}`);
   window.open(`https://wa.me/?text=${text}`, "_blank", "noopener");
 });
 

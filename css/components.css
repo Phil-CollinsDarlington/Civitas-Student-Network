@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — COMPONENT LIBRARY
+   CSN — COMPONENT LIBRARY
    Reusable, named components. If you're adding a new card or
    button somewhere, look here first before writing new CSS.
 ============================================================= */
@@ -239,7 +239,7 @@
   gap: var(--space-3);
 }
 
-/* Signature background element: the "Nexus Web" — an SVG network
+/* Signature background element: the "Civitas Web" — an SVG network
    of connected nodes rendered behind the hero content. This is
    drawn in the HTML as an inline <svg class="nexus-web"> so it can
    be styled with CSS variables here. */
@@ -748,7 +748,7 @@ legend {
   padding: 0 8px;
 }
 
-/* Pathway tabs (Join USN page) */
+/* Pathway tabs (Join CSN page) */
 .pathway-tabs {
   display: flex;
   flex-wrap: wrap;

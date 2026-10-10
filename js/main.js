@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — MAIN.JS
+   CSN — MAIN.JS
    Global, page-independent initialization. Page-specific behaviour
    lives in its own file (navigation.js, opportunities.js, etc.)
    and each of those files sets up its own DOMContentLoaded listener,
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     el.textContent = new Date().getFullYear();
   });
 
-  // Pathway tabs on the Join USN page (Student / Volunteer / Rep)
+  // Pathway tabs on the Join CSN page (Student / Volunteer / Rep)
   const tabs = document.querySelectorAll("[data-pathway-tab]");
   const panels = document.querySelectorAll("[data-pathway-panel]");
   if (tabs.length) {

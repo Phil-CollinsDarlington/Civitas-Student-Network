@@ -1,8 +1,8 @@
-# Universal Student Nexus (USN) — Website
+# Civitas Student Network (CSN) — Website
 
 **One Network. Endless Possibilities.**
 
-This is the official website for Universal Student Nexus, a student-driven
+This is the official website for Civitas Student Network, a student-driven
 organization that bridges the gap between education and opportunity. It is
 a **static website** — plain HTML, CSS and JavaScript, no backend, no
 build tools, no database. You can edit it in VS Code and open the files
@@ -12,11 +12,11 @@ directly in a browser to preview your changes.
 
 ## 1. What the project is
 
-A multi-page marketing and community website for USN, covering:
+A multi-page marketing and community website for CSN, covering:
 
 - Homepage with hero, programs, opportunities, events and community previews
 - About, Programs, Opportunities, Events, Crew, Partners, Insights pages
-- A "Join USN" page with three application pathways (Student / Volunteer / Campus Rep)
+- A "Join CSN" page with three application pathways (Student / Volunteer / Campus Rep)
 - A Contact page and working forms (via **Netlify Forms** — see Section 13)
 - A branded 404 page
 
@@ -28,7 +28,7 @@ is architected so those can be added later without a redesign.
 ## 2. Folder structure
 
 ```
-USN-WEBSITE/
+CSN-WEBSITE/
 ├── index.html              ← Homepage
 ├── 404.html                ← Custom "page not found" page
 ├── pages/                  ← Every other page
@@ -90,7 +90,7 @@ like:
 
 ```html
 <!-- =========================================================
-     WHAT IS USN?
+     WHAT IS CSN?
      TO EDIT: replace this copy...
 ========================================================= -->
 ```
@@ -188,8 +188,8 @@ until you replace it with the real detail (then remove the
 
 ## 13. How Netlify Forms work
 
-This site has **no custom backend**. The five forms (Join USN ×3
-pathways, Partner With USN, Contact) all use **Netlify Forms** — a
+This site has **no custom backend**. The five forms (Join CSN ×3
+pathways, Partner With CSN, Contact) all use **Netlify Forms** — a
 feature built into Netlify hosting. Because each `<form>` has a
 `data-netlify="true"` attribute and a unique `name`, Netlify
 automatically detects and stores submissions the moment you deploy —
@@ -233,7 +233,7 @@ matching `assets/images/` subfolder (`crew/`, `events/`, `programs/`,
 ```bash
 git init
 git add .
-git commit -m "Initial USN website"
+git commit -m "Initial CSN website"
 git branch -M main
 git remote add origin https://github.com/YOUR-USERNAME/usn-website.git
 git push -u origin main
@@ -251,7 +251,7 @@ git push -u origin main
    you.
 4. Click **Deploy**. Netlify will detect the forms automatically.
 
-You can also drag-and-drop the whole `USN-WEBSITE` folder onto
+You can also drag-and-drop the whole `CSN-WEBSITE` folder onto
 Netlify's "Deploys" page for a quick manual deploy without GitHub.
 
 ---

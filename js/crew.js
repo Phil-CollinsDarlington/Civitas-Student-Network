@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — CREW.JS
+   CSN — CREW.JS
    Powers the profile modal on the Crew page. Each profile card
    is a <button class="profile-card" data-profile-trigger> with
    data-* attributes holding the detail content — this script
@@ -30,7 +30,7 @@ function initCrewModal() {
       trigger.dataset.bio ||
       "A full biography for this crew member has not been provided yet. Check back soon.";
     if (initialsEl) {
-      initialsEl.textContent = (trigger.dataset.name || "USN")
+      initialsEl.textContent = (trigger.dataset.name || "CSN")
         .split(" ")
         .map((w) => w[0])
         .slice(0, 2)

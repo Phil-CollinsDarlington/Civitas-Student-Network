@@ -1,11 +1,11 @@
 /* =============================================================
-   USN — FORMS.JS
+   CSN — FORMS.JS
 
    Every form on the site uses this same script:
    - Student Membership
    - Volunteer
    - Campus Representative
-   - Partner With USN
+   - Partner With CSN
    - Contact
 
    NETLIFY FORMS
@@ -17,7 +17,7 @@
    2. Accessible error messages
    3. Honeypot spam protection
    4. AJAX submission to Netlify
-   5. Redirecting the visitor to the USN thank-you page
+   5. Redirecting the visitor to the CSN thank-you page
       after a successful submission
 
    IMPORTANT:
@@ -42,9 +42,9 @@
 function initForms() {
 
   /* =========================================================
-     FIND ALL USN FORMS
+     FIND ALL CSN FORMS
      
-     Every USN form should have:
+     Every CSN form should have:
      
          data-usn-form
      
@@ -215,7 +215,7 @@ function initForms() {
            Netlify has received the submission.
 
            Instead of simply showing the small success message,
-           send the visitor to the USN thank-you page.
+           send the visitor to the CSN thank-you page.
 
            Because the forms are inside /pages/ and
            thank-you.html is also inside /pages/, this works:

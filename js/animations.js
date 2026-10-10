@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — ANIMATIONS.JS
+   CSN — ANIMATIONS.JS
    Handles scroll-reveal for any element with a [data-reveal]
    attribute, and provides an animateCounters() helper for when
    real, verified statistics are added to the impact section

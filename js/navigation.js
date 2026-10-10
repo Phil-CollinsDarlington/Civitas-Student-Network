@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — NAVIGATION.JS
+   CSN — NAVIGATION.JS
    Handles: mobile hamburger menu, sticky header shadow-on-scroll,
    and marking the current page as active in the nav.
    TO EDIT NAV LINKS: edit the <nav> markup in each HTML file's

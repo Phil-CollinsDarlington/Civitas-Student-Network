@@ -1,5 +1,5 @@
 /* =============================================================
-   USN — RESPONSIVE RULES
+   CSN — RESPONSIVE RULES
    Mobile-first base styles live in style.css / components.css.
    This file adds/adjusts layout as the viewport grows, plus the
    mobile navigation behaviour below the tablet breakpoint.
@@ -11,7 +11,7 @@
 ============================================================= */
 
 /* =============================================================
-   USN MOBILE NAVIGATION
+   CSN MOBILE NAVIGATION
    Full-screen mobile menu
 ============================================================= */
 
@@ -128,7 +128,7 @@
 
 
   /* -----------------------------------------------------------
-     JOIN USN
+     JOIN CSN
   ----------------------------------------------------------- */
 
 .nav-list .nav-join {

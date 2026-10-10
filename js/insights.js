@@ -1,12 +1,12 @@
 /* =============================================================
-   USN — INSIGHTS.JS
+   CSN — INSIGHTS.JS
    ---------------------------------------------------------------
    ADD A NEW ARTICLE
    Copy an object below and replace the values. Keep the property
    names unchanged. `category` should match one of INSIGHT_CATEGORIES.
 
    The entries below are DEMO content only, clearly marked, meant
-   to show the layout — replace with genuine USN articles.
+   to show the layout — replace with genuine CSN articles.
 ============================================================= */
 
 const INSIGHT_CATEGORIES = [
@@ -26,7 +26,7 @@ const insights = [
     title: "Example: Five Ways to Make the Most of a Mentorship",
     category: "Leadership",
     summary:
-      "A placeholder article demonstrating the Insights layout. Replace with genuine USN content.",
+      "A placeholder article demonstrating the Insights layout. Replace with genuine CSN content.",
     date: "2026-08-01",
     isExample: true,
     link: "#",
