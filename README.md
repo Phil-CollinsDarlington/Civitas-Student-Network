@@ -169,11 +169,10 @@ edit its values, the same way as opportunities above.
 
 ## 11. How to change social media links
 
-Every page's footer has a "Connect" column with `href="#"`
-placeholders and an HTML comment above each one telling you which
-platform it is. Search for `EDIT: replace #` across the project to
-find every spot at once. The homepage's dedicated social section is
-in `index.html` under the `SOCIAL SECTION` banner.
+Every page's footer has a "Connect" column with the confirmed
+Instagram, TikTok and WhatsApp Community links. The homepage's
+dedicated social section is in `index.html` under the `SOCIAL SECTION`
+banner.
 
 ---
 
