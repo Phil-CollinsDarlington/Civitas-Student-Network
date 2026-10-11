@@ -162,6 +162,15 @@
     display: none !important;
   }
 
+  .directory-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .directory-controls .btn {
+    width: 100%;
+  }
+
 
   /* -----------------------------------------------------------
      PREVENT THE PAGE BEHIND THE MENU FROM SCROLLING

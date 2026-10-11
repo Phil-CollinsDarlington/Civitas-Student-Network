@@ -130,7 +130,22 @@ function initOpportunitiesDirectory() {
 
   const chipWrap = document.querySelector("[data-opportunity-filters]");
   const searchInput = document.querySelector("[data-opportunity-search]");
+  const status = document.querySelector("[data-opportunity-status]");
+  const clearButton = document.querySelector("[data-clear-opportunity-filters]");
+  const params = new URLSearchParams(window.location.search);
   let activeCategory = "All";
+
+  const updateUrl = () => {
+    const nextParams = new URLSearchParams();
+    if (activeCategory !== "All") nextParams.set("category", activeCategory);
+    if (searchInput?.value.trim()) nextParams.set("q", searchInput.value.trim());
+    const query = nextParams.toString();
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`
+    );
+  };
 
   function applyFilters() {
     const query = (searchInput?.value || "").toLowerCase().trim();
@@ -144,6 +159,13 @@ function initOpportunitiesDirectory() {
       return matchesCategory && matchesQuery;
     });
     renderOpportunities(filtered, container);
+    if (status) {
+      status.textContent = `${filtered.length} ${filtered.length === 1 ? "opportunity" : "opportunities"} found`;
+    }
+    if (clearButton) {
+      clearButton.hidden = activeCategory === "All" && !query;
+    }
+    updateUrl();
   }
 
   if (chipWrap) {
@@ -169,6 +191,26 @@ function initOpportunitiesDirectory() {
     searchInput.addEventListener("input", applyFilters);
   }
 
+  if (clearButton) {
+    clearButton.addEventListener("click", () => {
+      activeCategory = "All";
+      if (searchInput) searchInput.value = "";
+      chipWrap?.querySelectorAll(".filter-chip").forEach((chip) => {
+        chip.setAttribute("aria-pressed", chip.dataset.category === "All" ? "true" : "false");
+      });
+      applyFilters();
+      searchInput?.focus();
+    });
+  }
+
+  const initialCategory = params.get("category");
+  const initialQuery = params.get("q");
+  if (OPPORTUNITY_CATEGORIES.includes(initialCategory)) activeCategory = initialCategory;
+  if (searchInput && initialQuery) searchInput.value = initialQuery;
+
+  chipWrap?.querySelectorAll(".filter-chip").forEach((chip) => {
+    chip.setAttribute("aria-pressed", chip.dataset.category === activeCategory ? "true" : "false");
+  });
   applyFilters();
 }
 

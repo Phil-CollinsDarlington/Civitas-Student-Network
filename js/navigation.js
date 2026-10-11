@@ -13,15 +13,19 @@ function initNavigation() {
 
   if (!header || !toggle || !navList) return;
 
+  const getMenuLinks = () => [...navList.querySelectorAll("a")];
+
   // --- Mobile menu open/close -------------------------------
   const closeMenu = () => {
     toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open navigation menu");
     navList.classList.remove("is-open");
     document.body.style.overflow = "";
   };
 
   const openMenu = () => {
     toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Close navigation menu");
     navList.classList.add("is-open");
     document.body.style.overflow = "hidden";
   };
@@ -36,9 +40,35 @@ function initNavigation() {
     link.addEventListener("click", closeMenu);
   });
 
+  document.addEventListener("click", (event) => {
+    if (
+      navList.classList.contains("is-open") &&
+      !navList.contains(event.target) &&
+      !toggle.contains(event.target)
+    ) {
+      closeMenu();
+    }
+  });
+
   // Close on Escape for keyboard users
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeMenu();
+    if (event.key === "Escape" && navList.classList.contains("is-open")) {
+      closeMenu();
+      toggle.focus();
+    }
+
+    if (event.key !== "Tab" || !navList.classList.contains("is-open")) return;
+    const links = getMenuLinks();
+    if (!links.length) return;
+    const first = links[0];
+    const last = links[links.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 
   // Close the mobile menu automatically if the viewport grows
