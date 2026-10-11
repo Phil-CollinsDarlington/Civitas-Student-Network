@@ -106,6 +106,63 @@
       </div>
     </section>
 
+    <section class="section section--light">
+      <div class="container">
+        <div class="card opportunity-alert-card" style="max-width:760px;margin-inline:auto;">
+          <span class="eyebrow">Stay in the loop</span>
+          <h2>Get opportunities matched to you</h2>
+          <p class="text-lead">Tell us what you are looking for and CSN will share relevant scholarships, internships, fellowships, jobs and events with you.</p>
+          <div class="form-success" role="status">
+            <span>Your preferences have been received. We&rsquo;ll be in touch with relevant CSN opportunities.</span>
+          </div>
+          <form name="opportunity-alerts" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-usn-form action="thank-you.html">
+            <input type="hidden" name="form-name" value="opportunity-alerts" />
+            <p class="hp-field"><label>Don&rsquo;t fill this out if you&rsquo;re human: <input name="bot-field" /></label></p>
+            <div class="form-grid grid-2">
+              <div class="field">
+                <label class="field-required" for="alert-email">Email</label>
+                <input type="email" id="alert-email" name="email" required autocomplete="email" placeholder="you@example.com" />
+                <span class="field-error" role="alert"></span>
+              </div>
+              <div class="field">
+                <label class="field-required" for="alert-category">Main area of interest</label>
+                <select id="alert-category" name="interest_category" required>
+                  <option value="">Choose a category</option>
+                  <option>Internships</option>
+                  <option>Jobs</option>
+                  <option>Scholarships</option>
+                  <option>Competitions</option>
+                  <option>Fellowships</option>
+                  <option>Conferences</option>
+                  <option>Exchanges</option>
+                  <option>Training</option>
+                </select>
+                <span class="field-error" role="alert"></span>
+              </div>
+              <div class="field">
+                <label class="field-required" for="alert-location">Preferred location</label>
+                <select id="alert-location" name="preferred_location" required>
+                  <option value="">Choose a location</option>
+                  <option>Uganda</option>
+                  <option>East Africa</option>
+                  <option>Global</option>
+                  <option>Remote</option>
+                  <option>Any location</option>
+                </select>
+                <span class="field-error" role="alert"></span>
+              </div>
+              <div class="field">
+                <label for="alert-course">Field of study or interest</label>
+                <input type="text" id="alert-course" name="field_of_interest" placeholder="e.g. technology, business, health" />
+              </div>
+            </div>
+            <p class="form-note">We&rsquo;ll only use these details to share relevant CSN opportunities. You can unsubscribe at any time.</p>
+            <button type="submit" class="btn btn--gold" style="margin-top:1rem;">Subscribe to opportunity alerts</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
   </main>
   <!-- =========================================================
        SITE FOOTER
