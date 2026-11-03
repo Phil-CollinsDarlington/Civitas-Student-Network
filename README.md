@@ -138,7 +138,9 @@ the "Example listing" badge, which should only appear on demo data.
 Open [`js/events.js`](js/events.js) and add an object to the `events` array.
 Provide `startsAt` and `endsAt` ISO date-times with the correct timezone
 offset. The page automatically classifies events as upcoming, ongoing, or
-past.
+past. For past events, optionally add an `image` path, an event `notes`
+string, and `speakerNotes` entries with each guest speaker's name and key
+point.
 
 ---
 

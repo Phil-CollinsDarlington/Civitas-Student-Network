@@ -4,10 +4,23 @@
  */
 const events = [
   {
+    title: "Civitas Student Network Launch",
+    startsAt: "2026-10-30T15:00:00+03:00",
+    endsAt: "2026-10-30T18:00:00+03:00",
+    venue: "Makerere University Business School, ADB Block Theatre 1",
+    description: "The official launch of Civitas Student Network, bringing students and collaborators together to build one connected network.",
+    speaker: "Civitas Student Network team",
+    image: "/assets/images/events/CSN%20launch.jpeg",
+    notes: "",
+    speakerNotes: [
+      // { name: "Guest speaker name", note: "Key point they shared." },
+    ],
+  },
+  {
     title: "CSN Student Networking Mixer",
     startsAt: "2026-12-18T15:00:00+03:00",
     endsAt: "2026-12-18T18:00:00+03:00",
-    venue: "Kampala",
+    venue: "Makerere University Business School, ADB Block Theatre 1",
     description: "Connect with students, mentors and professionals from across the network.",
     speaker: "To be announced",
     registrationLink: "#",
@@ -76,6 +89,8 @@ function renderEvents(data, container, { past = false, ongoing = false } = {}) {
         <h3>${escapeHtml(event.title)}</h3><p>${escapeHtml(event.description)}</p>
         <div class="data-card-meta"><span>Time: ${escapeHtml(formatEventTime(event))}</span><span>Venue: ${escapeHtml(event.venue)}</span></div>
         ${event.speaker ? `<div class="data-card-meta"><span>Speaker: ${escapeHtml(event.speaker)}</span></div>` : ""}
+        ${event.notes ? `<div class="event-notes"><strong>Event notes</strong><p>${escapeHtml(event.notes)}</p></div>` : ""}
+        ${event.speakerNotes?.length ? `<div class="event-notes"><strong>Guest speaker notes</strong>${event.speakerNotes.map((item) => `<p><strong>${escapeHtml(item.name)}:</strong> ${escapeHtml(item.note)}</p>`).join("")}</div>` : ""}
       </div>
       <div class="data-card-footer">${past ? report : status === "ongoing" ? '<span class="badge badge--outline">In progress</span>' : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registrationLink || "#")}">Register</a>`}</div>
     </article>`;
