@@ -434,6 +434,13 @@
 .event-notes p {
   margin-top: 4px;
 }
+.event-modal-image {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-4);
+}
 .data-card-footer {
   margin-top: auto;
   padding-top: var(--space-3);

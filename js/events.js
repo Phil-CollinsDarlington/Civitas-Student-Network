@@ -44,6 +44,8 @@ function escapeHtml(value = "") {
   }[character]));
 }
 
+let lastEventTrigger = null;
+
 function getEventStatus(event, now = new Date()) {
   const start = new Date(event.startsAt);
   const end = new Date(event.endsAt);
@@ -67,6 +69,55 @@ function formatEventTime(event) {
   return `${start.toLocaleTimeString([], options)} - ${end.toLocaleTimeString([], options)}`;
 }
 
+function getEventModal() {
+  let modalOverlay = document.querySelector("[data-event-modal]");
+  if (modalOverlay) return modalOverlay;
+  modalOverlay = document.createElement("div");
+  modalOverlay.className = "modal-overlay";
+  modalOverlay.dataset.eventModal = "";
+  modalOverlay.setAttribute("aria-hidden", "true");
+  modalOverlay.innerHTML = `
+    <div class="modal event-modal" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
+      <button type="button" class="modal-close" data-event-modal-close aria-label="Close event details">&times;</button>
+      <div data-event-modal-content></div>
+    </div>`;
+  document.body.appendChild(modalOverlay);
+  return modalOverlay;
+}
+
+function openEventModal(event, trigger) {
+  const modalOverlay = getEventModal();
+  const content = modalOverlay.querySelector("[data-event-modal-content]");
+  const status = getEventStatus(event);
+  const speakerNotes = event.speakerNotes?.length
+    ? `<section class="event-notes"><strong>Guest speaker notes</strong>${event.speakerNotes.map((item) => `<p><strong>${escapeHtml(item.name)}:</strong> ${escapeHtml(item.note)}</p>`).join("")}</section>`
+    : "";
+  content.innerHTML = `
+    ${event.image ? `<img class="event-modal-image" src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)} event photo">` : ""}
+    <div class="data-card-meta"><span class="badge badge--gold">${formatEventDate(event.startsAt)}</span><span class="badge badge--outline">${status === "ongoing" ? "Ongoing" : status === "past" ? "Past event" : "Upcoming"}</span></div>
+    <h2 id="event-modal-title">${escapeHtml(event.title)}</h2>
+    <p>${escapeHtml(event.description)}</p>
+    <div class="data-card-meta"><span>Time: ${escapeHtml(formatEventTime(event))}</span><span>Venue: ${escapeHtml(event.venue)}</span></div>
+    ${event.speaker ? `<p><strong>Speaker:</strong> ${escapeHtml(event.speaker)}</p>` : ""}
+    ${event.notes ? `<section class="event-notes"><strong>Event notes</strong><p>${escapeHtml(event.notes)}</p></section>` : ""}
+    ${speakerNotes}
+    ${event.reportLink ? `<p><a class="btn btn--outline btn--sm" href="${escapeHtml(event.reportLink)}">Event report</a></p>` : ""}`;
+  modalOverlay.classList.add("is-open");
+  modalOverlay.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  lastEventTrigger = trigger;
+  modalOverlay.querySelector("[data-event-modal-close]").focus();
+}
+
+function closeEventModal() {
+  const modalOverlay = document.querySelector("[data-event-modal]");
+  if (!modalOverlay) return;
+  modalOverlay.classList.remove("is-open");
+  modalOverlay.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (lastEventTrigger) lastEventTrigger.focus();
+}
+
 function renderEvents(data, container, { past = false, ongoing = false } = {}) {
   if (!container) return;
   if (!data.length) {
@@ -80,7 +131,7 @@ function renderEvents(data, container, { past = false, ongoing = false } = {}) {
     const report = event.reportLink
       ? `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.reportLink)}">Event report</a>`
       : "";
-    return `<article class="data-card" data-reveal="fade">
+    return `<article class="data-card" data-event-index="${events.indexOf(event)}" tabindex="0" role="button" aria-label="View details for ${escapeHtml(event.title)}" data-reveal="fade">
       <div class="data-card-media">${event.image
         ? `<img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)} event photo" loading="lazy">`
         : formatEventDate(event.startsAt)}</div>
@@ -95,9 +146,33 @@ function renderEvents(data, container, { past = false, ongoing = false } = {}) {
       <div class="data-card-footer">${past ? report : status === "ongoing" ? '<span class="badge badge--outline">In progress</span>' : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registrationLink || "#")}">Register</a>`}</div>
     </article>`;
   }).join("");
+  container.querySelectorAll("[data-event-index]").forEach((card) => {
+    const open = () => openEventModal(events[Number(card.dataset.eventIndex)], card);
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("a, button")) return;
+      open();
+    });
+    card.addEventListener("keydown", (event) => {
+      if ((event.key === "Enter" || event.key === " ") && !event.target.closest("a, button")) {
+        event.preventDefault();
+        open();
+      }
+    });
+  });
 }
 
 function initEvents() {
+  const modal = getEventModal();
+  if (!modal.dataset.bound) {
+    modal.querySelector("[data-event-modal-close]").addEventListener("click", closeEventModal);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeEventModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) closeEventModal();
+    });
+    modal.dataset.bound = "true";
+  }
   const groups = events.reduce((result, event) => {
     result[getEventStatus(event)].push(event);
     return result;
