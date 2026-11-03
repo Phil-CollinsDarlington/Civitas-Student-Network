@@ -1,26 +1,26 @@
-/* Public event rendering. Supabase events are used when configured;
- * the demo data keeps local previews usable before setup is complete. */
-const demoEvents = [
+/*
+ * Add and edit events in this array. Status is calculated automatically from
+ * startsAt and endsAt, so no manual status field is needed.
+ */
+const events = [
   {
-    title: "Example: CSN Student Networking Mixer",
-    date: "2026-10-18",
-    time: "3:00 PM",
-    venue: "Example Venue, Kampala",
-    description: "A placeholder event showing how an upcoming event card renders. Replace with a confirmed event.",
+    title: "CSN Student Networking Mixer",
+    startsAt: "2026-12-18T15:00:00+03:00",
+    endsAt: "2026-12-18T18:00:00+03:00",
+    venue: "Kampala",
+    description: "Connect with students, mentors and professionals from across the network.",
     speaker: "To be announced",
     registrationLink: "#",
-    status: "upcoming",
     isExample: true,
   },
   {
-    title: "Example: Career Readiness Workshop",
-    date: "2026-11-05",
-    time: "10:00 AM",
-    venue: "Example Venue, Kampala",
-    description: "A placeholder workshop listing demonstrating the events layout and filtering.",
+    title: "Career Readiness Workshop",
+    startsAt: "2027-01-15T10:00:00+03:00",
+    endsAt: "2027-01-15T13:00:00+03:00",
+    venue: "Kampala",
+    description: "A practical workshop to help students prepare for their next opportunity.",
     speaker: "To be announced",
     registrationLink: "#",
-    status: "upcoming",
     isExample: true,
   },
 ];
@@ -31,21 +31,27 @@ function escapeHtml(value = "") {
   }[character]));
 }
 
-function formatEventDate(isoDate) {
-  const date = new Date(`${isoDate}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return escapeHtml(isoDate);
+function getEventStatus(event, now = new Date()) {
+  const start = new Date(event.startsAt);
+  const end = new Date(event.endsAt);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "upcoming";
+  if (now < start) return "upcoming";
+  if (now <= end) return "ongoing";
+  return "past";
+}
+
+function formatEventDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date to be announced";
   return date.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
 }
 
-function getEventStatus(event, now = new Date()) {
-  const start = new Date(event.starts_at);
-  const end = new Date(event.ends_at);
-  if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
-    if (now < start) return "upcoming";
-    if (now <= end) return "ongoing";
-    return "past";
-  }
-  return event.status === "past" ? "past" : "upcoming";
+function formatEventTime(event) {
+  const start = new Date(event.startsAt);
+  const end = new Date(event.endsAt);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "Time to be announced";
+  const options = { hour: "numeric", minute: "2-digit" };
+  return `${start.toLocaleTimeString([], options)} - ${end.toLocaleTimeString([], options)}`;
 }
 
 function renderEvents(data, container, { past = false, ongoing = false } = {}) {
@@ -57,53 +63,38 @@ function renderEvents(data, container, { past = false, ongoing = false } = {}) {
     return;
   }
   container.innerHTML = data.map((event) => {
-    const image = event.cover_image
-      ? `<img src="${escapeHtml(event.cover_image)}" alt="${escapeHtml(event.title)} event photo" loading="lazy">`
-      : (past ? "Event photo coming soon" : formatEventDate(event.date));
     const status = getEventStatus(event);
-    const report = event.report_link
-      ? `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.report_link)}">Event report</a>`
+    const report = event.reportLink
+      ? `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.reportLink)}">Event report</a>`
       : "";
     return `<article class="data-card" data-reveal="fade">
-      <div class="data-card-media">${image}</div>
+      <div class="data-card-media">${event.image
+        ? `<img src="${escapeHtml(event.image)}" alt="${escapeHtml(event.title)} event photo" loading="lazy">`
+        : formatEventDate(event.startsAt)}</div>
       <div class="data-card-body">
-        <div class="data-card-meta"><span class="badge badge--gold">${formatEventDate(event.date)}</span><span class="badge badge--outline">${status === "ongoing" ? "Ongoing" : status === "past" ? "Past event" : "Upcoming"}</span>${event.isExample ? '<span class="badge badge--demo">Example event</span>' : ""}</div>
+        <div class="data-card-meta"><span class="badge badge--gold">${formatEventDate(event.startsAt)}</span><span class="badge badge--outline">${status === "ongoing" ? "Ongoing" : status === "past" ? "Past event" : "Upcoming"}</span>${event.isExample ? '<span class="badge badge--demo">Example event</span>' : ""}</div>
         <h3>${escapeHtml(event.title)}</h3><p>${escapeHtml(event.description)}</p>
-        <div class="data-card-meta"><span>Time: ${escapeHtml(event.time)}</span><span>Venue: ${escapeHtml(event.venue)}</span></div>
+        <div class="data-card-meta"><span>Time: ${escapeHtml(formatEventTime(event))}</span><span>Venue: ${escapeHtml(event.venue)}</span></div>
         ${event.speaker ? `<div class="data-card-meta"><span>Speaker: ${escapeHtml(event.speaker)}</span></div>` : ""}
       </div>
-      <div class="data-card-footer">${past ? report : status === "ongoing" ? '<span class="badge badge--outline">In progress</span>' : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registration_link || event.registrationLink || "#")}">Register</a>`}</div>
+      <div class="data-card-footer">${past ? report : status === "ongoing" ? '<span class="badge badge--outline">In progress</span>' : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registrationLink || "#")}">Register</a>`}</div>
     </article>`;
   }).join("");
 }
 
-async function getEvents() {
-  const config = window.CSN_SUPABASE_CONFIG;
-  if (!config?.url || !config?.anonKey || !window.supabase) return demoEvents;
-  const client = window.supabase.createClient(config.url, config.anonKey);
-  const { data, error } = await client.from("events").select("*").eq("published", true).order("date", { ascending: true });
-  if (error) {
-    console.error("Could not load published events.", error);
-    return [];
-  }
-  return data || [];
-}
-
-async function initEvents() {
-  const data = await getEvents();
+function initEvents() {
+  const groups = events.reduce((result, event) => {
+    result[getEventStatus(event)].push(event);
+    return result;
+  }, { upcoming: [], ongoing: [], past: [] });
   const preview = document.querySelector("[data-events-preview]");
   const upcoming = document.querySelector("[data-events-upcoming]");
-  const past = document.querySelector("[data-events-past]");
-  const grouped = data.reduce((groups, event) => {
-    const status = getEventStatus(event);
-    groups[status].push(event);
-    return groups;
-  }, { upcoming: [], ongoing: [], past: [] });
-  if (preview) renderEvents([...grouped.ongoing, ...grouped.upcoming].slice(0, 3), preview);
-  if (upcoming) renderEvents(grouped.upcoming, upcoming);
   const ongoing = document.querySelector("[data-events-ongoing]");
-  if (ongoing) renderEvents(grouped.ongoing, ongoing, { ongoing: true });
-  if (past) renderEvents(grouped.past, past, { past: true });
+  const past = document.querySelector("[data-events-past]");
+  if (preview) renderEvents([...groups.ongoing, ...groups.upcoming].slice(0, 3), preview);
+  if (upcoming) renderEvents(groups.upcoming, upcoming);
+  if (ongoing) renderEvents(groups.ongoing, ongoing, { ongoing: true });
+  if (past) renderEvents(groups.past, past, { past: true });
 }
 
 document.addEventListener("DOMContentLoaded", initEvents);
