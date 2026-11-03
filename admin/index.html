@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSN Event Admin</title>
+  <link rel="icon" href="../assets/images/logo/csn_logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <style>
+    .admin-shell { max-width: 960px; margin: 0 auto; padding: 3rem 1rem; }
+    .admin-panel { background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 2rem; box-shadow: var(--shadow-sm); }
+    .admin-form { display: grid; gap: 1rem; }
+    .admin-form label { display: grid; gap: .4rem; font-weight: 600; }
+    .admin-form input, .admin-form textarea, .admin-form select { width: 100%; padding: .75rem; border: 1px solid var(--color-border); border-radius: 6px; font: inherit; }
+    .admin-form textarea { min-height: 120px; resize: vertical; }
+    .admin-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+    .admin-status { min-height: 1.5rem; color: var(--color-muted); }
+    .admin-event-list { display: grid; gap: 1rem; margin-top: 2rem; }
+    .admin-event { border: 1px solid var(--color-border); border-radius: 6px; padding: 1rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="admin-shell">
+    <div class="admin-panel">
+      <p class="eyebrow">Private area</p>
+      <h1>Event administration</h1>
+      <p class="text-lead">Create and publish events with a cover image and gallery.</p>
+
+      <form class="admin-form" data-login-form>
+        <label>Email <input type="email" name="email" required autocomplete="email" /></label>
+        <label>Password <input type="password" name="password" required autocomplete="current-password" /></label>
+        <div class="admin-actions"><button class="btn btn--gold" type="submit">Sign in</button><a class="btn btn--outline" href="../index.html">Public site</a></div>
+        <p class="admin-status" data-login-status role="status"></p>
+      </form>
+
+      <section data-dashboard hidden>
+        <div class="admin-actions" style="justify-content:space-between;margin:2rem 0 1rem;">
+          <h2>Events</h2><button class="btn btn--outline btn--sm" type="button" data-sign-out>Sign out</button>
+        </div>
+        <form class="admin-form" data-event-form>
+          <input type="hidden" name="id" />
+          <label>Title <input name="title" required maxlength="160" /></label>
+          <label>Date <input type="date" name="date" required /></label>
+          <label>Time <input name="time" required maxlength="80" /></label>
+          <label>Venue <input name="venue" required maxlength="160" /></label>
+          <label>Description <textarea name="description" required maxlength="2000"></textarea></label>
+          <label>Speaker or facilitator <input name="speaker" maxlength="160" /></label>
+          <label>Registration link <input type="url" name="registration_link" placeholder="https://..." /></label>
+          <label>Status
+            <select name="status"><option value="upcoming">Upcoming</option><option value="past">Past</option></select>
+          </label>
+          <label><span><input type="checkbox" name="published" checked /> Published on the public site</span></label>
+          <label>Cover image <input type="file" name="cover" accept="image/jpeg,image/png,image/webp" /></label>
+          <label>Gallery images <input type="file" name="gallery" accept="image/jpeg,image/png,image/webp" multiple /></label>
+          <div class="admin-actions"><button class="btn btn--gold" type="submit">Save event</button><button class="btn btn--outline" type="button" data-reset>Clear</button></div>
+          <p class="admin-status" data-event-status role="status"></p>
+        </form>
+        <div class="admin-event-list" data-event-list></div>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/admin.js" defer></script>
+</body>
+</html>

@@ -1,24 +1,12 @@
-/* =============================================================
-   CSN — EVENTS.JS
-   ---------------------------------------------------------------
-   ADD A NEW EVENT
-   Copy the object below and replace the information.
-   Keep the property names unchanged. Set "status" to "upcoming"
-   or "past".
-
-   The entries below are placeholder EXAMPLES only — clearly mark
-   any demonstration event and replace with real, confirmed events
-   before publishing.
-============================================================= */
-
-const events = [
+/* Public event rendering. Supabase events are used when configured;
+ * the demo data keeps local previews usable before setup is complete. */
+const demoEvents = [
   {
     title: "Example: CSN Student Networking Mixer",
     date: "2026-10-18",
     time: "3:00 PM",
     venue: "Example Venue, Kampala",
-    description:
-      "A placeholder event showing how an upcoming event card renders. Replace with a confirmed event.",
+    description: "A placeholder event showing how an upcoming event card renders. Replace with a confirmed event.",
     speaker: "To be announced",
     registrationLink: "#",
     status: "upcoming",
@@ -29,91 +17,72 @@ const events = [
     date: "2026-11-05",
     time: "10:00 AM",
     venue: "Example Venue, Kampala",
-    description:
-      "A placeholder workshop listing demonstrating the events layout and filtering.",
+    description: "A placeholder workshop listing demonstrating the events layout and filtering.",
     speaker: "To be announced",
     registrationLink: "#",
     status: "upcoming",
     isExample: true,
   },
-  {
-    title: "Example: CSN Launch Gathering",
-    date: "2026-06-12",
-    time: "2:00 PM",
-    venue: "Example Venue, Kampala",
-    description:
-      "A placeholder past-event entry, ready to be replaced with photos and highlights from a real gathering.",
-    speaker: "CSN Team",
-    registrationLink: "#",
-    status: "past",
-    isExample: true,
-  },
 ];
+
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
+  }[character]));
+}
 
 function formatEventDate(isoDate) {
   const date = new Date(`${isoDate}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return isoDate;
+  if (Number.isNaN(date.getTime())) return escapeHtml(isoDate);
   return date.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function renderEvents(data, container, { past = false } = {}) {
   if (!container) return;
-
   if (!data.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <h3>${past ? "No past events yet" : "No upcoming events right now"}</h3>
-        <p>${past ? "Check back after our first events take place." : "New dates are added regularly — check back soon."}</p>
-      </div>`;
+    container.innerHTML = `<div class="empty-state"><h3>${past ? "No past events yet" : "No upcoming events right now"}</h3><p>${past ? "Check back after our first events take place." : "New dates are added regularly — check back soon."}</p></div>`;
     return;
   }
-
-  container.innerHTML = data
-    .map(
-      (ev) => `
-      <article class="data-card" data-reveal="fade">
-        <div class="data-card-media" aria-hidden="true">${past ? "Event gallery placeholder" : formatEventDate(ev.date)}</div>
-        <div class="data-card-body">
-          <div class="data-card-meta">
-            <span class="badge badge--gold">${formatEventDate(ev.date)}</span>
-            ${ev.isExample ? '<span class="badge badge--demo">Example event</span>' : ""}
-          </div>
-          <h3>${ev.title}</h3>
-          <p>${ev.description}</p>
-          <div class="data-card-meta"><span>🕐 ${ev.time}</span><span>📍 ${ev.venue}</span></div>
-          ${ev.speaker ? `<div class="data-card-meta"><span>🎤 ${ev.speaker}</span></div>` : ""}
-        </div>
-        <div class="data-card-footer">
-          ${
-            past
-              ? '<span class="badge badge--outline">Past event</span>'
-              : `<a class="btn btn--outline btn--sm" href="${ev.registrationLink}">Register</a>`
-          }
-        </div>
-      </article>`
-    )
-    .join("");
+  container.innerHTML = data.map((event) => {
+    const image = event.cover_image
+      ? `<img src="${escapeHtml(event.cover_image)}" alt="${escapeHtml(event.title)} event photo" loading="lazy">`
+      : (past ? "Event photo coming soon" : formatEventDate(event.date));
+    const report = event.report_link
+      ? `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.report_link)}">Event report</a>`
+      : "";
+    return `<article class="data-card" data-reveal="fade">
+      <div class="data-card-media">${image}</div>
+      <div class="data-card-body">
+        <div class="data-card-meta"><span class="badge badge--gold">${formatEventDate(event.date)}</span>${event.isExample ? '<span class="badge badge--demo">Example event</span>' : ""}</div>
+        <h3>${escapeHtml(event.title)}</h3><p>${escapeHtml(event.description)}</p>
+        <div class="data-card-meta"><span>Time: ${escapeHtml(event.time)}</span><span>Venue: ${escapeHtml(event.venue)}</span></div>
+        ${event.speaker ? `<div class="data-card-meta"><span>Speaker: ${escapeHtml(event.speaker)}</span></div>` : ""}
+      </div>
+      <div class="data-card-footer">${past ? `${report}<span class="badge badge--outline">Past event</span>` : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registrationLink || "#")}">Register</a>`}</div>
+    </article>`;
+  }).join("");
 }
 
-function initEventsPreview() {
-  const container = document.querySelector("[data-events-preview]");
-  if (!container) return;
-  const upcoming = events.filter((e) => e.status === "upcoming").slice(0, 3);
-  renderEvents(upcoming, container);
-}
-
-function initEventsPage() {
-  const upcomingContainer = document.querySelector("[data-events-upcoming]");
-  const pastContainer = document.querySelector("[data-events-past]");
-  if (upcomingContainer) {
-    renderEvents(events.filter((e) => e.status === "upcoming"), upcomingContainer);
+async function getEvents() {
+  const config = window.CSN_SUPABASE_CONFIG;
+  if (!config?.url || !config?.anonKey || !window.supabase) return demoEvents;
+  const client = window.supabase.createClient(config.url, config.anonKey);
+  const { data, error } = await client.from("events").select("*").eq("published", true).order("date", { ascending: true });
+  if (error) {
+    console.error("Could not load published events.", error);
+    return [];
   }
-  if (pastContainer) {
-    renderEvents(events.filter((e) => e.status === "past"), pastContainer, { past: true });
-  }
+  return data || [];
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initEventsPreview();
-  initEventsPage();
-});
+async function initEvents() {
+  const data = await getEvents();
+  const preview = document.querySelector("[data-events-preview]");
+  const upcoming = document.querySelector("[data-events-upcoming]");
+  const past = document.querySelector("[data-events-past]");
+  if (preview) renderEvents(data.filter((event) => event.status === "upcoming").slice(0, 3), preview);
+  if (upcoming) renderEvents(data.filter((event) => event.status === "upcoming"), upcoming);
+  if (past) renderEvents(data.filter((event) => event.status === "past"), past, { past: true });
+}
+
+document.addEventListener("DOMContentLoaded", initEvents);

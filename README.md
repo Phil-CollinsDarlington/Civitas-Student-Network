@@ -20,8 +20,8 @@ A multi-page marketing and community website for CSN, covering:
 - A Contact page and working forms (via **Netlify Forms** — see Section 13)
 - A branded 404 page
 
-No login system, member accounts, or admin dashboard exist yet — the site
-is architected so those can be added later without a redesign.
+The public site is static. Event administration is provided through the
+optional Supabase-backed dashboard described in Section 14.
 
 ---
 
@@ -206,7 +206,31 @@ basic spam protection, which Netlify checks automatically.
 
 ---
 
-## 14. How to add insights / opportunities / events images
+## 14. Event admin dashboard
+
+The site includes a protected event dashboard at `/admin/`. It uses
+Supabase email/password authentication, the `events` table, and the
+public `event-images` storage bucket.
+
+To configure it:
+
+1. Create a Supabase project and run [`supabase/schema.sql`](supabase/schema.sql)
+   in the Supabase SQL editor.
+2. Create the first admin user in Supabase Authentication → Users, copy
+   that user's UUID, and insert it into `public.admin_users`:
+   `insert into public.admin_users (user_id) values ('USER-UUID-HERE');`
+3. Copy the project URL and publishable anon key into
+   [`js/supabase-config.js`](js/supabase-config.js). Never put the
+   service-role key in the browser or repository.
+4. Open `/admin/` on the deployed site, sign in, and create events.
+5. Set `published` through the dashboard workflow; only published events
+   appear on the public homepage and Events page.
+
+The dashboard supports event details, upcoming/past status, a cover image,
+and multiple gallery images. The current public card displays the cover
+image; the gallery is stored for the next event-report/gallery page.
+
+## 15. How to add insights / opportunities / events images
 
 Right now, all opportunity/event/article cards use a colored
 placeholder block instead of a photo (to avoid using fake stock
@@ -216,7 +240,7 @@ into `assets/images/`.
 
 ---
 
-## 15. How to replace images generally
+## 16. How to replace images generally
 
 Every image placeholder in this project is intentional — real crew
 photos, event photos, partner logos and student photos were not
@@ -227,7 +251,7 @@ matching `assets/images/` subfolder (`crew/`, `events/`, `programs/`,
 
 ---
 
-## 16. How to deploy to GitHub
+## 17. How to deploy to GitHub
 
 ```bash
 git init
@@ -240,7 +264,7 @@ git push -u origin main
 
 ---
 
-## 17. How to deploy to Netlify
+## 18. How to deploy to Netlify
 
 1. Sign in at [netlify.com](https://www.netlify.com) and click **Add
    new site → Import an existing project**.
