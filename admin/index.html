@@ -26,8 +26,8 @@
   <main class="admin-shell">
     <div class="admin-panel">
       <p class="eyebrow">Private area</p>
-      <h1>Event administration</h1>
-      <p class="text-lead">Create and publish events with a cover image and gallery.</p>
+      <h1>Admin usage</h1>
+      <p class="text-lead">Manage and publish events with a cover image and gallery.</p>
 
       <form class="admin-form" data-login-form>
         <label>Email <input type="email" name="email" required autocomplete="email" /></label>
@@ -43,15 +43,13 @@
         <form class="admin-form" data-event-form>
           <input type="hidden" name="id" />
           <label>Title <input name="title" required maxlength="160" /></label>
-          <label>Date <input type="date" name="date" required /></label>
-          <label>Time <input name="time" required maxlength="80" /></label>
+          <label>Starts <input type="datetime-local" name="starts_at" required /></label>
+          <label>Ends <input type="datetime-local" name="ends_at" required /></label>
           <label>Venue <input name="venue" required maxlength="160" /></label>
           <label>Description <textarea name="description" required maxlength="2000"></textarea></label>
           <label>Speaker or facilitator <input name="speaker" maxlength="160" /></label>
           <label>Registration link <input type="url" name="registration_link" placeholder="https://..." /></label>
-          <label>Status
-            <select name="status"><option value="upcoming">Upcoming</option><option value="past">Past</option></select>
-          </label>
+          <p class="form-note">The event status updates automatically from its start and end times: upcoming, ongoing, or past.</p>
           <label><span><input type="checkbox" name="published" checked /> Published on the public site</span></label>
           <label>Cover image <input type="file" name="cover" accept="image/jpeg,image/png,image/webp" /></label>
           <label>Gallery images <input type="file" name="gallery" accept="image/jpeg,image/png,image/webp" multiple /></label>

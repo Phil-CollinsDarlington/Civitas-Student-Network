@@ -21,6 +21,29 @@ function setStatus(element, message, error = false) {
   element.style.color = error ? "var(--color-error)" : "";
 }
 
+function toIsoDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) throw new Error("Enter valid start and end times.");
+  return date.toISOString();
+}
+
+function toDateTimeLocal(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function getEventStatus(startsAt, endsAt, now = new Date(), fallback = "upcoming") {
+  const start = new Date(startsAt);
+  const end = new Date(endsAt);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return fallback;
+  if (now < start) return "upcoming";
+  if (now <= end) return "ongoing";
+  return "past";
+}
+
 function requireClient() {
   if (!adminClient) throw new Error("Supabase is not configured. Fill js/supabase-config.js first.");
 }
@@ -44,7 +67,7 @@ async function loadEvents() {
   if (error) throw error;
   eventList.innerHTML = data.map((event) => `
     <article class="admin-event">
-      <div><strong>${escapeAdminHtml(event.title)}</strong><br><span>${escapeAdminHtml(event.date)} · ${escapeAdminHtml(event.status)}</span></div>
+      <div><strong>${escapeAdminHtml(event.title)}</strong><br><span>${escapeAdminHtml(event.date)} · ${escapeAdminHtml(getEventStatus(event.starts_at, event.ends_at, new Date(), event.status))}</span></div>
       <button class="btn btn--outline btn--sm" type="button" data-edit="${escapeAdminHtml(event.id)}">Edit</button>
     </article>`).join("");
   eventList.querySelectorAll("[data-edit]").forEach((button) => {
@@ -57,8 +80,11 @@ function editEvent(event) {
     const field = eventForm.elements[key];
     if (!field) return;
     if (field.type === "checkbox") field.checked = Boolean(value);
+    else if (key === "starts_at" || key === "ends_at") field.value = toDateTimeLocal(value);
     else if (typeof value === "string") field.value = value;
   });
+  if (!event.starts_at) eventForm.elements.starts_at.value = `${event.date}T09:00`;
+  if (!event.ends_at) eventForm.elements.ends_at.value = `${event.date}T17:00`;
   eventForm.elements.id.value = event.id;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -67,16 +93,21 @@ async function saveEvent(submission) {
   requireClient();
   const values = Object.fromEntries(new FormData(submission).entries());
   const id = values.id || crypto.randomUUID();
+  const startsAt = toIsoDateTime(values.starts_at);
+  const endsAt = toIsoDateTime(values.ends_at);
+  if (new Date(endsAt) <= new Date(startsAt)) throw new Error("The end time must be after the start time.");
   const record = {
     id,
     title: values.title,
-    date: values.date,
-    time: values.time,
+    date: values.starts_at.slice(0, 10),
+    time: `${new Date(values.starts_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} - ${new Date(values.ends_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`,
     venue: values.venue,
     description: values.description,
     speaker: values.speaker || null,
     registration_link: values.registration_link || null,
-    status: values.status,
+    status: getEventStatus(startsAt, endsAt),
+    starts_at: startsAt,
+    ends_at: endsAt,
     published: submission.elements.published.checked,
   };
   const cover = submission.elements.cover.files[0];

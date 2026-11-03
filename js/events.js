@@ -37,28 +37,42 @@ function formatEventDate(isoDate) {
   return date.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
 }
 
-function renderEvents(data, container, { past = false } = {}) {
+function getEventStatus(event, now = new Date()) {
+  const start = new Date(event.starts_at);
+  const end = new Date(event.ends_at);
+  if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
+    if (now < start) return "upcoming";
+    if (now <= end) return "ongoing";
+    return "past";
+  }
+  return event.status === "past" ? "past" : "upcoming";
+}
+
+function renderEvents(data, container, { past = false, ongoing = false } = {}) {
   if (!container) return;
   if (!data.length) {
-    container.innerHTML = `<div class="empty-state"><h3>${past ? "No past events yet" : "No upcoming events right now"}</h3><p>${past ? "Check back after our first events take place." : "New dates are added regularly — check back soon."}</p></div>`;
+    const heading = past ? "No past events yet" : ongoing ? "No events are ongoing right now" : "No upcoming events right now";
+    const message = past ? "Check back after our first events take place." : "New dates are added regularly — check back soon.";
+    container.innerHTML = `<div class="empty-state"><h3>${heading}</h3><p>${message}</p></div>`;
     return;
   }
   container.innerHTML = data.map((event) => {
     const image = event.cover_image
       ? `<img src="${escapeHtml(event.cover_image)}" alt="${escapeHtml(event.title)} event photo" loading="lazy">`
       : (past ? "Event photo coming soon" : formatEventDate(event.date));
+    const status = getEventStatus(event);
     const report = event.report_link
       ? `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.report_link)}">Event report</a>`
       : "";
     return `<article class="data-card" data-reveal="fade">
       <div class="data-card-media">${image}</div>
       <div class="data-card-body">
-        <div class="data-card-meta"><span class="badge badge--gold">${formatEventDate(event.date)}</span>${event.isExample ? '<span class="badge badge--demo">Example event</span>' : ""}</div>
+        <div class="data-card-meta"><span class="badge badge--gold">${formatEventDate(event.date)}</span><span class="badge badge--outline">${status === "ongoing" ? "Ongoing" : status === "past" ? "Past event" : "Upcoming"}</span>${event.isExample ? '<span class="badge badge--demo">Example event</span>' : ""}</div>
         <h3>${escapeHtml(event.title)}</h3><p>${escapeHtml(event.description)}</p>
         <div class="data-card-meta"><span>Time: ${escapeHtml(event.time)}</span><span>Venue: ${escapeHtml(event.venue)}</span></div>
         ${event.speaker ? `<div class="data-card-meta"><span>Speaker: ${escapeHtml(event.speaker)}</span></div>` : ""}
       </div>
-      <div class="data-card-footer">${past ? `${report}<span class="badge badge--outline">Past event</span>` : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registrationLink || "#")}">Register</a>`}</div>
+      <div class="data-card-footer">${past ? report : status === "ongoing" ? '<span class="badge badge--outline">In progress</span>' : `<a class="btn btn--outline btn--sm" href="${escapeHtml(event.registration_link || event.registrationLink || "#")}">Register</a>`}</div>
     </article>`;
   }).join("");
 }
@@ -80,9 +94,17 @@ async function initEvents() {
   const preview = document.querySelector("[data-events-preview]");
   const upcoming = document.querySelector("[data-events-upcoming]");
   const past = document.querySelector("[data-events-past]");
-  if (preview) renderEvents(data.filter((event) => event.status === "upcoming").slice(0, 3), preview);
-  if (upcoming) renderEvents(data.filter((event) => event.status === "upcoming"), upcoming);
-  if (past) renderEvents(data.filter((event) => event.status === "past"), past, { past: true });
+  const grouped = data.reduce((groups, event) => {
+    const status = getEventStatus(event);
+    groups[status].push(event);
+    return groups;
+  }, { upcoming: [], ongoing: [], past: [] });
+  if (preview) renderEvents([...grouped.ongoing, ...grouped.upcoming].slice(0, 3), preview);
+  if (upcoming) renderEvents(grouped.upcoming, upcoming);
+  const ongoing = document.querySelector("[data-events-ongoing]");
+  if (ongoing) renderEvents(grouped.ongoing, ongoing, { ongoing: true });
+  if (past) renderEvents(grouped.past, past, { past: true });
 }
 
 document.addEventListener("DOMContentLoaded", initEvents);
+window.setInterval(initEvents, 60000);

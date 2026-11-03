@@ -135,9 +135,9 @@ the "Example listing" badge, which should only appear on demo data.
 
 ## 7. How to add events
 
-Open `js/events.js`. Copy an object out of the `events` array. Set
-`status` to `"upcoming"` or `"past"` — the page automatically sorts
-them into the right section.
+Use the admin dashboard to create an event and provide its start and end
+date-times. The page automatically classifies it as upcoming, ongoing, or
+past.
 
 ---
 
@@ -224,9 +224,15 @@ To configure it:
    service-role key in the browser or repository.
 4. Open `/admin/` on the deployed site, sign in, and create events.
 5. Set `published` through the dashboard workflow; only published events
-   appear on the public homepage and Events page.
+   appear on the public homepage and Events page. Set both the start and end
+   date-times in the dashboard. The public site automatically classifies each
+   event as upcoming, ongoing, or past.
 
-The dashboard supports event details, upcoming/past status, a cover image,
+If the `events` table already exists, run the migration statements at the
+bottom of [`supabase/schema.sql`](supabase/schema.sql) to add the schedule
+columns and allow the `ongoing` status.
+
+The dashboard supports event details, schedule-based status, a cover image,
 and multiple gallery images. The current public card displays the cover
 image; the gallery is stored for the next event-report/gallery page.
 

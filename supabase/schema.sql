@@ -8,7 +8,9 @@ create table if not exists public.events (
   description text not null,
   speaker text,
   registration_link text,
-  status text not null check (status in ('upcoming', 'past')),
+  status text not null check (status in ('upcoming', 'ongoing', 'past')),
+  starts_at timestamptz,
+  ends_at timestamptz,
   cover_image text,
   gallery text[] not null default '{}',
   report_link text,
@@ -16,6 +18,12 @@ create table if not exists public.events (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Apply these statements when upgrading an existing events table.
+alter table public.events add column if not exists starts_at timestamptz;
+alter table public.events add column if not exists ends_at timestamptz;
+alter table public.events drop constraint if exists events_status_check;
+alter table public.events add constraint events_status_check check (status in ('upcoming', 'ongoing', 'past'));
 
 create table if not exists public.admin_users (
   user_id uuid primary key references auth.users(id) on delete cascade
